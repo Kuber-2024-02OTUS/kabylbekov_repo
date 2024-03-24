@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: home-pod
+  namespace: homework
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.14.2
+      ports:
+        - containerPort: 8000
+      volumeMounts:
+        - name: workdir
+          mountPath: /homework
+      lifecycle:
+        preStop:
+          exec:
+            command: ["rm", "-f", "/homework/index.html"]
+  initContainers:
+    - name: init-con
+      image: busybox:1.28
+      command: [ 'sh', '-c', 'echo "Hello, World!" > /init/index.html']
+      volumeMounts:
+        - name: workdir
+          mountPath: /init
+  volumes:
+    - name: workdir
+      emptyDir: {}
